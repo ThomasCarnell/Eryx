@@ -1,0 +1,84 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84c15d37ddabb4c02a4095b51f6d1547, type: 3}
+  m_Name: AkWwiseProjectData
+  m_EditorClassIdentifier: 
+  autoPopulateEnabled: 1
+  CurrentPluginConfig: 
+  m_lastPopulateTimePart2: 0
+  m_lastPopulateTimePsrt1: 0
+  AcousticTextureWwu:
+  - Guid: '{42A2E4BC-FCCC-4FD3-B958-35E16E5CBF9B}'
+    m_lastTimePart2: -1999233080
+    m_lastTimePsrt1: 1826575872
+    ParentPhysicalPath: 
+    PhysicalPath: Virtual Acoustics/Default Work Unit.wwu
+    List: []
+  AuxBusWwu:
+  - Guid: '{4C139485-178F-40CC-B9AA-F3677762989A}'
+    m_lastTimePart2: -1999233080
+    m_lastTimePsrt1: -1158391424
+    ParentPhysicalPath: 
+    PhysicalPath: Master-Mixer Hierarchy/Default Work Unit.wwu
+    List: []
+  BankWwu:
+  - Guid: '{894A8C89-801B-4441-9F8C-3BAE1AE39BF1}'
+    m_lastTimePart2: -1999233079
+    m_lastTimePsrt1: -1173358720
+    ParentPhysicalPath: 
+    PhysicalPath: SoundBanks/Default Work Unit.wwu
+    List:
+    - Guid: a74e941021878544a299abbb21b7d575
+      ID: 1677137031
+      Name: Maser
+      Path: Default Work Unit/Maser
+      PathAndIcons:
+      - ElementName: Default Work Unit
+        ObjectType: 12
+      - ElementName: Maser
+        ObjectType: 7
+  EventWwu:
+  - Guid: '{CE7B8FCA-98AA-4825-A7F5-F4826226C11C}'
+    m_lastTimePart2: -1999233080
+    m_lastTimePsrt1: 1826575872
+    ParentPhysicalPath: 
+    PhysicalPath: Events/Default Work Unit.wwu
+    List: []
+  ExpandedItems:
+  - /Eryx_WwiseProject
+  RtpcWwu:
+  - Guid: '{D4D7A785-4EC7-4323-AFC9-2C46E24A5E96}'
+    m_lastTimePart2: -1999233080
+    m_lastTimePsrt1: 1826575872
+    ParentPhysicalPath: 
+    PhysicalPath: Game Parameters/Default Work Unit.wwu
+    List: []
+  StateWwu:
+  - Guid: '{EC644624-28F6-42F2-939A-53C446AFA930}'
+    m_lastTimePart2: -1999233080
+    m_lastTimePsrt1: 1826575872
+    ParentPhysicalPath: 
+    PhysicalPath: States/Default Work Unit.wwu
+    List: []
+  SwitchWwu:
+  - Guid: '{1E642F9C-B255-4E87-9479-7610E26FF122}'
+    m_lastTimePart2: -1999233080
+    m_lastTimePsrt1: 1826575872
+    ParentPhysicalPath: 
+    PhysicalPath: Switches/Default Work Unit.wwu
+    List: []
+  TriggerWwu:
+  - Guid: '{C59C48B4-7E5C-44D7-9DDC-D8F02ABAAAF0}'
+    m_lastTimePart2: -1999233080
+    m_lastTimePsrt1: 1826575872
+    ParentPhysicalPath: 
+    PhysicalPath: Triggers/Default Work Unit.wwu
+    List: []

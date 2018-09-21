@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SoundBanksInfo Platform="Windows" BasePlatform="Windows" SchemaVersion="11" SoundbankVersion="132">
+	<RootPaths>
+		<ProjectRoot>/Users/RasmusThorup/Library/Application Support/Wwise2018/Bottles/wwise/dosdevices/y:/Documents/GitHub/Eryx/Eryx/Eryx_WwiseProject/</ProjectRoot>
+		<SourceFilesRoot>/Users/RasmusThorup/Library/Application Support/Wwise2018/Bottles/wwise/dosdevices/y:/Documents/GitHub/Eryx/Eryx/Eryx_WwiseProject/.cache/Windows/</SourceFilesRoot>
+		<SoundBanksRoot>/Users/RasmusThorup/Library/Application Support/Wwise2018/Bottles/wwise/dosdevices/y:/Documents/GitHub/Eryx/Eryx/Eryx_WwiseProject/GeneratedSoundBanks/Windows/</SoundBanksRoot>
+		<ExternalSourcesInputFile></ExternalSourcesInputFile>
+		<ExternalSourcesOutputRoot>/Users/RasmusThorup/Library/Application Support/Wwise2018/Bottles/wwise/dosdevices/y:/Documents/GitHub/Eryx/Eryx/Eryx_WwiseProject/GeneratedSoundBanks/Windows</ExternalSourcesOutputRoot>
+	</RootPaths>
+	<DialogueEvents/>
+	<StreamedFiles/>
+	<MediaFilesNotInAnyBank/>
+	<SoundBanks>
+		<SoundBank Id="1355168291" Language="SFX">
+			<ObjectPath>Init</ObjectPath>
+			<ShortName>Init</ShortName>
+			<Path>Init.bnk</Path>
+		</SoundBank>
+		<SoundBank Id="1677137031" Language="SFX">
+			<ObjectPath>\SoundBanks\Default Work Unit\Maser</ObjectPath>
+			<ShortName>Maser</ShortName>
+			<Path>Maser.bnk</Path>
+		</SoundBank>
+	</SoundBanks>
+</SoundBanksInfo>
