@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<IncrementalBankBuild Version="6" Flags="878078161">
+	<Platform GUID="{73A7431A-3451-413E-82C4-5DD379662780}">
+		<Banks>
+			<Language ID="393239870">
+				<File Name="Init" Hash="2869639144" Timestamp="1537537959"/>
+				<File Name="Maser" Hash="2440175736" Timestamp="1537538053"/>
+			</Language>
+		</Banks>
+		<XMLInfo>
+			<Language ID="-1">
+				<File Name="" Hash="2304377426" Timestamp="1537538053"/>
+			</Language>
+		</XMLInfo>
+	</Platform>
+	<Platform GUID="{957B7B5C-76F4-46B1-8792-42775CD52451}">
+		<Banks>
+			<Language ID="393239870">
+				<File Name="Init" Hash="1473828538" Timestamp="1537537960"/>
+				<File Name="Maser" Hash="2440175736" Timestamp="1537538054"/>
+			</Language>
+		</Banks>
+		<XMLInfo>
+			<Language ID="-1">
+				<File Name="" Hash="605312262" Timestamp="1537538054"/>
+			</Language>
+		</XMLInfo>
+	</Platform>
+	<Platform GUID="{E9E589C0-99EA-4FA5-A993-8C29481BEBE3}">
+		<Banks>
+			<Language ID="393239870">
+				<File Name="Init" Hash="2805561520" Timestamp="1537537960"/>
+				<File Name="Maser" Hash="2440175736" Timestamp="1537538054"/>
+			</Language>
+		</Banks>
+		<XMLInfo>
+			<Language ID="-1">
+				<File Name="" Hash="3322923884" Timestamp="1537538054"/>
+			</Language>
+		</XMLInfo>
+	</Platform>
+</IncrementalBankBuild>
