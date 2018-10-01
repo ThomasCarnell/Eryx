@@ -6,60 +6,73 @@ public class PlayerMovement : MonoBehaviour {
 
     public float bankingSpeed;
     public float movementSpeed;
+    public float accel = 5f;
+    public float maxSpeed;
+    public float globalGravityAmount = -9.81f;
+    public float magneticGravityAmount = -9.81f;
     Rigidbody playerRigid;
 
+    int playerState;
 
     void Start () {
         playerRigid = GetComponent<Rigidbody>();
 	}
 
-    private void Update()
-    {
+    void Update () {
 
-        /*
+        if (Input.GetKey(KeyCode.W))
+        {
+            //Kør fremaf når den er under max speed
+            if (playerRigid.velocity.magnitude < maxSpeed)
+            {
+                playerRigid.AddForce(transform.forward * accel, ForceMode.Impulse);
+            }
 
-        Vector3 dir = Vector3.zero;
+        }else // Brems
+        {
+            if (playerRigid.velocity.magnitude > 0f);
+            {
+                playerRigid.velocity *= 0.95f;
+            }
+        }
 
-        // we assume that the device is held parallel to the ground
-        // and the Home button is in the right hand
+        switch (GroundChecker.playerState)
+        {
+            case 0: //Player on track
 
-        // remap the device acceleration axis to game coordinates:
-        // 1) XY plane of the device is mapped onto XZ plane
-        // 2) rotated 90 degrees around Y axis
-        dir.x = Input.acceleration.x;
-        //dir.z = Input.acceleration.x;
+                //Lock player to road surface, unless velocity gets too high.
 
-        //print("X: " + Input.acceleration.x + " Y: " + Input.acceleration.y + " Z: " + Input.acceleration.z);
+                
 
-        // clamp acceleration vector to the unit sphere
-        if (dir.sqrMagnitude > 1)
-            dir.Normalize();
+                break;
 
-        // Make it move 10 meters per second instead of 10 meters per frame...
-        dir *= Time.deltaTime;
+            case 1: //Player off track - Flight movement
+               
+                //Turn player around if upside-down and apply global gravity
 
+                
 
-        Vector3 movement = new Vector3 (dir.x * bankingSpeed,0,movementSpeed*Time.deltaTime);
+                break;
 
-        // Move object
-        transform.Translate(movement);
+            default:
+                break;
+        }
 
-        //Debug.Log("Direction "+ dir);*/
+        //Vector3 dir = Vector3.zero;
+        //dir.x = Input.acceleration.x;
+
+        //if (dir.sqrMagnitude > 1)
+        //    dir.Normalize();
+
+        //dir *= Time.deltaTime;
+
+        //playerRigid.AddTorque(0,dir.x*bankingSpeed,0,ForceMode.Force);
+
+        //playerRigid.AddRelativeForce(new Vector3(0, 0, movementSpeed));
+
     }
 
-    void FixedUpdate () {
-
-        Vector3 dir = Vector3.zero;
-        dir.x = Input.acceleration.x;
-
-        if (dir.sqrMagnitude > 1)
-            dir.Normalize();
-
-        dir *= Time.deltaTime;
-
-        playerRigid.AddTorque(0,dir.x*bankingSpeed,0,ForceMode.Force);
-
-        playerRigid.AddRelativeForce(new Vector3(0, 0, movementSpeed));
+    void ApplyGravity(Vector3 dir){
 
     }
-}
+}   
