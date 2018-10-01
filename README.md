@@ -13,6 +13,8 @@ AI players
 
 GYRO-controles or equal
 
+Landscape-screen only
+
 Beat the game in order to get early access to Impalers music video
 
 UI features:
