@@ -57,7 +57,7 @@ public class PlayerMovement : MonoBehaviour {
 
         dir *= Time.deltaTime;
 
-        playerRigid.AddTorque(0,dir.x*bankingSpeed,0,ForceMode.);
+        playerRigid.AddTorque(0,dir.x*bankingSpeed,0,ForceMode.Force);
 
         playerRigid.AddRelativeForce(new Vector3(0, 0, movementSpeed));
 
