@@ -19,6 +19,8 @@ Beat the game in order to get early access to Impalers music video
 
 UI features:
 
+Aspect-ration change with speed
+
 Speedometer
 
 Time/Lap counter
