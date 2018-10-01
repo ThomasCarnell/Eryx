@@ -6,17 +6,17 @@ public class PlayerMovement : MonoBehaviour {
 
     public float bankingSpeed;
     public float movementSpeed;
-    //Rigidbody playerRigid;
+    Rigidbody playerRigid;
 
 
     void Start () {
-        //playerRigid = GetComponent<Rigidbody>();
+        playerRigid = GetComponent<Rigidbody>();
 	}
 
     private void Update()
     {
 
-
+        /*
 
         Vector3 dir = Vector3.zero;
 
@@ -44,14 +44,22 @@ public class PlayerMovement : MonoBehaviour {
         // Move object
         transform.Translate(movement);
 
-        //Debug.Log("Direction "+ dir);
+        //Debug.Log("Direction "+ dir);*/
     }
 
     void FixedUpdate () {
-        //playerRigid.AddForce(new Vector3(0, 0, speed));
 
+        Vector3 dir = Vector3.zero;
+        dir.x = Input.acceleration.x;
 
+        if (dir.sqrMagnitude > 1)
+            dir.Normalize();
 
+        dir *= Time.deltaTime;
+
+        playerRigid.AddTorque(0,dir.x*bankingSpeed,0,ForceMode.);
+
+        playerRigid.AddRelativeForce(new Vector3(0, 0, movementSpeed));
 
     }
 }
