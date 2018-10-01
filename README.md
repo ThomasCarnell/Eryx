@@ -11,7 +11,7 @@ Size limit: 100MB
 4 players and vehicles to choose from
 AI players
 
-GYRO-controles or equal
+Accelerator controller
 
 Landscape-screen only
 
