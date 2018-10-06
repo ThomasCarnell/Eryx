@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
+using NaughtyAttributes;
 
 public class CameraController : MonoBehaviour {
 
-    public float shakeAmountMultiplier = 1f;
+    public bool useShakeWhenGoingFast;
+    [ShowIf("useShakeWhenGoingFast")] public float shakeAmountMultiplier = 1f;
 
-    public Vector2 aspectRatioMinMax;
+    public bool changeAspectratioWhenGoingFast;
+    [ShowIf("changeAspectratioWhenGoingFast")]public Vector2 aspectRatioMinMax;
 
     CinemachineVirtualCamera playerCam;
     CinemachineBasicMultiChannelPerlin playerCamNoise;
@@ -19,9 +22,15 @@ public class CameraController : MonoBehaviour {
 	}
 
     public void CameraEditsSpeed(float speedRatio){
-        playerCamNoise.m_AmplitudeGain = speedRatio * shakeAmountMultiplier;
+        if (useShakeWhenGoingFast)
+        {
+            playerCamNoise.m_AmplitudeGain = speedRatio * shakeAmountMultiplier;
+        }
 
-        playerCam.m_Lens.FieldOfView = Mathf.Lerp(aspectRatioMinMax.x, aspectRatioMinMax.y, speedRatio);
+        if (changeAspectratioWhenGoingFast)
+        {
+            playerCam.m_Lens.FieldOfView = Mathf.Lerp(aspectRatioMinMax.x, aspectRatioMinMax.y, speedRatio);
+        }
     }
 
 }
