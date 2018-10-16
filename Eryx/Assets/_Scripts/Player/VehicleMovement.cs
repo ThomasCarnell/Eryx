@@ -9,16 +9,14 @@ public class VehicleMovement : MonoBehaviour
 {
     public float speed;						//The current forward speed of the ship
 
+    public CharacterProfile selectedCharacter; //Skal nok være en gamecontroller der håndtere denne.
+
     [BoxGroup("Drive Settings")]
-    public float driveForce = 17f;			//The force that the engine generates
-    [BoxGroup("Drive Settings")]
-    [Range(0.01f, 1)] public float turnForceTimer = .5f;
+    public DriftingState driftingState;
     [BoxGroup("Drive Settings")]
     public float slowingVelFactor = .99f;   //The percentage of velocity the ship maintains when not thrusting (e.g., a value of .99 means the ship loses 1% velocity when not thrusting)
     [BoxGroup("Drive Settings")]
     public float brakingVelFactor = .95f;   //The percentage of velocty the ship maintains when braking
-    [BoxGroup("Drive Settings")]
-    public float driftAmount;
     [BoxGroup("Drive Settings")]
     public Vector2 angleOfRoll;			//The angle that the ship "banks" into a turn
 
@@ -41,6 +39,11 @@ public class VehicleMovement : MonoBehaviour
     public float hoverGravity = 20f;        //The gravity applied to the ship while it is on the ground
     [BoxGroup("Physics Settings")]
     public float fallGravity = 80f;         //The gravity applied to the ship while it is falling
+
+    //EngineStuff
+    float driftAmount;
+    public enum DriftingState {NoDrifting, IsDrifting, StoppingDrifting, OnIce}
+    float driftTimer;
 
     Rigidbody rigidBody;                    //A reference to the ship's rigidbody
     PlayerInput input;                      //A reference to the player's input					
@@ -70,11 +73,14 @@ public class VehicleMovement : MonoBehaviour
         input = GetComponent<PlayerInput>();
 
         //Calculate the ship's drag value
-        drag = driveForce / terminalVelocity;
+        //drag = driveForce / terminalVelocity;
 
         //Set the speed when the camera should start shaking.
-        cameraShakeMinSpeed = terminalVelocity * cameraShakeSpeedRatio;
-        cameraShakeRemainSpeed = terminalVelocity - cameraShakeMinSpeed;
+        cameraShakeMinSpeed = selectedCharacter.topSpeed * cameraShakeSpeedRatio;
+        cameraShakeRemainSpeed = selectedCharacter.topSpeed - cameraShakeMinSpeed;
+
+        //Dont drift at start;
+        driftingState = DriftingState.NoDrifting;
 
 
 #if UNITY_EDITOR //Debug setup
@@ -171,9 +177,11 @@ public class VehicleMovement : MonoBehaviour
     void CalculatePropulsion()
     {
         //Calculate the yaw torque based on the rudder and current angular velocity - Den der angular velocity laver noget fucked når man er på hovedet
-        float rotationTorque = input.rudder * turnForceTimer /*- rigidBody.angularVelocity.y*/;
+        float rotationTorque = input.rudder * selectedCharacter.turnForceTimer /*- rigidBody.angularVelocity.y*/;
         //Apply the torque to the ship's Y axis
         rigidBody.AddRelativeTorque(0f, rotationTorque, 0f, ForceMode.VelocityChange);
+
+        #region Drifting setup
 
         //Calculate the current sideways speed by using the dot product. This tells us
         //how much of the ship's velocity is in the "right" or "left" direction
@@ -182,8 +190,63 @@ public class VehicleMovement : MonoBehaviour
         //Calculate the desired amount of friction to apply to the side of the vehicle. This
         //is what keeps the ship from drifting into the walls during turns. If you want to add
         //drifting to the game, divide Time.fixedDeltaTime by some amount
-
         Vector3 sideFriction;
+
+        switch (driftingState)
+        {
+            case DriftingState.NoDrifting:
+
+                driftAmount = 0;
+                driftTimer = 1;
+
+                // if speed is enought to start drifting, drift.
+                if (speed > selectedCharacter.speedToStartDrifting)
+                {
+                    driftingState = DriftingState.IsDrifting;
+                }
+                break;
+
+            case DriftingState.IsDrifting:
+
+                driftAmount = selectedCharacter.driftAmount;
+                driftTimer = 1;
+
+                // If speed is under amount to drift, stop
+                if (speed < selectedCharacter.speedToStartDrifting)
+                {
+                    driftingState = DriftingState.StoppingDrifting;
+                }
+
+                break;
+
+            case DriftingState.StoppingDrifting:
+
+                driftTimer = Mathf.Clamp01 (driftTimer - Time.fixedDeltaTime*.5f);
+
+                driftAmount = selectedCharacter.driftAmount * driftTimer;
+
+                //If driftTimer ends stop drifting
+                if (driftTimer<=0.1f)
+                {
+                    driftingState = DriftingState.NoDrifting;
+                }
+
+                // if speed gets above drifting needed, start drifting again.
+                if (speed > selectedCharacter.speedToStartDrifting)
+                {
+                    driftingState = DriftingState.IsDrifting;
+                }
+
+                break;
+
+            case DriftingState.OnIce:
+
+                break;
+
+            default:
+                break;
+        }
+
         if (driftAmount > 0)
         {
             sideFriction = -transform.right * (sidewaysSpeed / Time.fixedDeltaTime / driftAmount);
@@ -195,6 +258,8 @@ public class VehicleMovement : MonoBehaviour
 
         //Finally, apply the sideways friction
         rigidBody.AddForce(sideFriction, ForceMode.Acceleration);
+
+        #endregion
 
         //Make the ship bank.
         CalculateBanking(sidewaysSpeed);
@@ -212,11 +277,23 @@ public class VehicleMovement : MonoBehaviour
         if (input.isBraking)
             rigidBody.velocity *= brakingVelFactor;
 
+        #region Vehicle Populsion calculations
+
         //Calculate and apply the amount of propulsion force by multiplying the drive force
         //by the amount of applied thruster and subtracting the drag amount
-        float propulsion = driveForce * input.thruster - drag * Mathf.Clamp(speed, 0f, terminalVelocity);
-        rigidBody.AddForce(transform.forward * propulsion, ForceMode.Acceleration);
+        //float propulsion = driveForce * input.thruster - drag * Mathf.Clamp(speed, 0f, terminalVelocity); //Den game version
 
+        float currentVelocity = rigidBody.velocity.magnitude;
+
+        float velocityCurveTime = GetCurveTimeForValue(selectedCharacter.speedCurve, currentVelocity, Mathf.RoundToInt(selectedCharacter.speedCurve[selectedCharacter.speedCurve.length - 1].value));
+
+        float nextVelocity = selectedCharacter.speedCurve.Evaluate(velocityCurveTime + Time.fixedDeltaTime);
+
+        float deltaVelocity = nextVelocity - currentVelocity;
+
+        rigidBody.AddForce(transform.forward * deltaVelocity * input.thruster, ForceMode.VelocityChange);
+
+#endregion
     }
 
     void CalculateBanking(float angleAmount){
@@ -234,6 +311,53 @@ public class VehicleMovement : MonoBehaviour
 
     }
 
+    public float GetCurveTimeForValue(AnimationCurve curveToCheck, float value, int accuracy)
+    {
+
+        float startTime = curveToCheck.keys[0].time;
+        float endTime = curveToCheck.keys[curveToCheck.length - 1].time;
+        float nearestTime = startTime;
+        float step = endTime - startTime;
+
+        for (int i = 0; i < accuracy; i++)
+        {
+
+            float valueAtNearestTime = curveToCheck.Evaluate(nearestTime);
+            float distanceToValueAtNearestTime = Mathf.Abs(value - valueAtNearestTime);
+
+            float timeToCompare = nearestTime + step;
+            float valueAtTimeToCompare = curveToCheck.Evaluate(timeToCompare);
+            float distanceToValueAtTimeToCompare = Mathf.Abs(value - valueAtTimeToCompare);
+
+            if (distanceToValueAtTimeToCompare < distanceToValueAtNearestTime)
+            {
+                nearestTime = timeToCompare;
+                valueAtNearestTime = valueAtTimeToCompare;
+            }
+            step = Mathf.Abs(step * 0.5f) * Mathf.Sign(value - valueAtNearestTime);
+        }
+
+        return Mathf.Clamp(nearestTime, 0, endTime);
+    }
+    /*
+    float EvaluateAccCurveFromTime(float t, Keyframe keyframe0, Keyframe keyframe1)
+    {
+        float dt = keyframe1.time - keyframe0.time;
+
+        float m0 = keyframe0.outTangent * dt;
+        float m1 = keyframe1.inTangent * dt;
+
+        float t2 = t * t;
+        float t3 = t2 * t;
+
+        float a = 2 * t3 - 3 * t2 + 1;
+        float b = t3 - 2 * t2 + t;
+        float c = t3 - t2;
+        float d = -2 * t3 + 3 * t2;
+
+        return a * keyframe0.value + b * m0 + c * m1 + d * keyframe1.value;
+    }*/
+
     void OnCollisionStay(Collision collision)
     {
         //If the ship has collided with an object on the Wall layer...
@@ -250,7 +374,7 @@ public class VehicleMovement : MonoBehaviour
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("Wall"))
         {
-            rigidBody.velocity *= .4f;
+            //rigidBody.velocity *= .7f; //Make the player lose velocity
 
 
 #if UNITY_EDITOR //Debug only worth in Editor.

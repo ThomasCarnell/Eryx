@@ -6,8 +6,8 @@ Material:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: Player
-  m_Shader: {fileID: 4800000, guid: 36f0247b92e8c4bcda7200af115ea8b0, type: 3}
+  m_Name: PlayerReal
+  m_Shader: {fileID: 4800000, guid: 3b61495324d6c4eed84451ff11ecefcc, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -19,4 +19,6 @@ Material:
     serializedVersion: 3
     m_TexEnvs: []
     m_Floats: []
-    m_Colors: []
+    m_Colors:
+    - Color_C4DE56D5: {r: 0.1981132, g: 0, b: 0, a: 0}
+    - Color_FCF22A73: {r: 1, g: 1, b: 1, a: 0}
