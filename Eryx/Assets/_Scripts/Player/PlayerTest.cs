@@ -23,11 +23,11 @@ public class PlayerTest : MonoBehaviour
     private float current_speed;
     public float gravityAmount;
 
-    Rigidbody playerRigid;
+    //Rigidbody playerRigid;
 
     private void Start()
     {
-        playerRigid = GetComponent<Rigidbody>();
+        //playerRigid = GetComponent<Rigidbody>();
     }
 
 

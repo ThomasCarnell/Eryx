@@ -24,8 +24,8 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 1
-      value: 98.06259
+      time: 2.2140079
+      value: 115.57672
       inSlope: 5.228567
       outSlope: 5.228567
       tangentMode: 0
@@ -45,7 +45,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   topSpeed: 200
-  accelerationTime: 2
+  accelerationTime: 4
   speedToStartDrifting: 150
   driftAmount: 10
   turnForceTimer: 0.5

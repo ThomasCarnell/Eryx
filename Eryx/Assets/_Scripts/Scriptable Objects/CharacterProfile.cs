@@ -8,16 +8,16 @@ public class CharacterProfile : ScriptableObject {
 
     [BoxGroup("Engine Setup")]
     public AnimationCurve speedCurve;
-    [BoxGroup("Engine Setup")]
-    public float topSpeed;
-    [BoxGroup("Engine Setup")]
-    public float accelerationTime;
+    //[BoxGroup("Engine Setup")]
+    //public float topSpeed;
+    //[BoxGroup("Engine Setup")]
+    //public float accelerationTime;
 
-    [Button("Update Acceleration Time & Top Speed")]
-    void UpdateSpeedCurve(){
-        accelerationTime= speedCurve.keys[speedCurve.length-1].time;
-        topSpeed = speedCurve.keys[speedCurve.length-1].value;
-    }
+    //[Button("Update Acceleration Time & Top Speed")]
+    //void UpdateSpeedCurve(){
+    //    accelerationTime= speedCurve.keys[speedCurve.length-1].time;
+    //    topSpeed = speedCurve.keys[speedCurve.length-1].value;
+    //}
 
 
     [BoxGroup("Control Setup")]

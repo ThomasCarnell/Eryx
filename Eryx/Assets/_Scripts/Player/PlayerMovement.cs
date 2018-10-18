@@ -30,7 +30,7 @@ public class PlayerMovement : MonoBehaviour {
 
         }else // Brems
         {
-            if (playerRigid.velocity.magnitude > 0f);
+            if (playerRigid.velocity.magnitude > 0f)
             {
                 playerRigid.velocity *= 0.95f;
             }
