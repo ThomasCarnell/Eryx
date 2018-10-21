@@ -23,7 +23,7 @@ MonoBehaviour:
   m_RenderScale: 1
   m_SupportsDynamicBatching: 1
   m_DirectionalShadowsSupported: 1
-  m_ShadowAtlasResolution: 2048
+  m_ShadowAtlasResolution: 1024
   m_ShadowDistance: 500
   m_ShadowCascades: 2
   m_Cascade2Split: 0.25

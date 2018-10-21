@@ -29,7 +29,7 @@ public class CameraController : MonoBehaviour {
 
         if (changeAspectratioWhenGoingFast)
         {
-            playerCam.m_Lens.FieldOfView = Mathf.Lerp(aspectRatioMinMax.x, aspectRatioMinMax.y, speedRatio);
+            playerCam.m_Lens.FieldOfView = Mathf.Lerp(aspectRatioMinMax.x, aspectRatioMinMax.y, speedRatio*Time.fixedDeltaTime);
         }
     }
 

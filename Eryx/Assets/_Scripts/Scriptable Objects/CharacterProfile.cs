@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using NaughtyAttributes;
 
 [CreateAssetMenu(fileName ="Character Profile")]
@@ -8,17 +6,10 @@ public class CharacterProfile : ScriptableObject {
 
     [BoxGroup("Engine Setup")]
     public AnimationCurve speedCurve;
-    //[BoxGroup("Engine Setup")]
-    //public float topSpeed;
-    //[BoxGroup("Engine Setup")]
-    //public float accelerationTime;
-
-    //[Button("Update Acceleration Time & Top Speed")]
-    //void UpdateSpeedCurve(){
-    //    accelerationTime= speedCurve.keys[speedCurve.length-1].time;
-    //    topSpeed = speedCurve.keys[speedCurve.length-1].value;
-    //}
-
+    [BoxGroup("Engine Setup")]
+    public float hoverHeight = 1.5f;
+    [BoxGroup("Engine Setup")]
+    public float hoverForce = 300f;
 
     [BoxGroup("Control Setup")]
     public float speedToStartDrifting;

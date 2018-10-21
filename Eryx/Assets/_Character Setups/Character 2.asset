@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be01489eb538d4504ad0311a0af91557, type: 3}
+  m_Name: Character 2
+  m_EditorClassIdentifier: 
+  speedCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 3
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 7.6497965
+      value: 67.796616
+      inSlope: 5.228567
+      outSlope: 5.228567
+      tangentMode: 0
+      weightedMode: 3
+      inWeight: 1
+      outWeight: 0.4785992
+    - serializedVersion: 3
+      time: 9.90138
+      value: 106.262566
+      inSlope: 10.577296
+      outSlope: 10.577296
+      tangentMode: 0
+      weightedMode: 3
+      inWeight: 0.5875486
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  hoverHeight: 1.5
+  hoverForce: 300
+  speedToStartDrifting: 150
+  driftAmount: 5
+  turnForceTimer: 0.5

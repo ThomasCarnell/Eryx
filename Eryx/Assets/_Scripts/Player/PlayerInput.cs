@@ -28,13 +28,13 @@ public class PlayerInput : MonoBehaviour
 
 
         //If a GameManager exists and the game is not active...
-        /*if (GameManager.instance != null && !GameManager.instance.IsActiveGame())
+        if (GameManager.instance != null && !GameManager.instance.IsActiveGame())
 		{
 			//...set all inputs to neutral values and exit this method
 			thruster = rudder = 0f;
 			isBraking = false;
 			return;
-		}*/
+		}
 
         //Get the values of the thruster, rudder, and brake from the input class
 

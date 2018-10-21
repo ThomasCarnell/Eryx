@@ -4,7 +4,8 @@
 using UnityEngine;
 using UnityEditor;
 using NaughtyAttributes;
-
+using DG.Tweening;
+using UnityEngine.Rendering.PostProcessing;
 
 public class VehicleMovement : MonoBehaviour
 {
@@ -20,15 +21,12 @@ public class VehicleMovement : MonoBehaviour
     public float slowingVelFactor = .99f;   //The percentage of velocity the ship maintains when not thrusting (e.g., a value of .99 means the ship loses 1% velocity when not thrusting)
     [BoxGroup("Driver Settings")]
     public float brakingVelFactor = .95f;   //The percentage of velocty the ship maintains when braking
+    [Tooltip("x = amount, y = min and max angle")]
     [BoxGroup("Driver Settings")]
     public Vector2 angleOfRoll;			//The angle that the ship "banks" into a turn
 
     [BoxGroup("Hover Settings")]
-    public float hoverHeight = 1.5f;        //The height the ship maintains when hovering
-    [BoxGroup("Hover Settings")]
-    public float maxGroundDist = 5f;        //The distance the ship can be above the ground before it is "falling"
-    [BoxGroup("Hover Settings")]
-    public float hoverForce = 300f;			//The force of the ship's hovering
+    public float checkForGroundDist = 5f;        //The distance the ship can be above the ground before it is "falling"
     [BoxGroup("Hover Settings")]
     public LayerMask whatIsGround;			//A layer mask to determine what layer the ground is on
     public PIDController hoverPID;			//A PID controller to smooth the ship's hovering
@@ -37,8 +35,8 @@ public class VehicleMovement : MonoBehaviour
     public Transform shipBody;				//A reference to the ship's body, this is for cosmetics
     [BoxGroup("Physics Settings")]
     public float terminalVelocity = 100f;   //The max speed the ship can go
-    [BoxGroup("Physics Settings")]
-    public float hoverGravity = 20f;        //The gravity applied to the ship while it is on the ground
+    //[BoxGroup("Physics Settings")]
+    //public float hoverGravity = 20f;        //The gravity applied to the ship while it is on the ground
     [BoxGroup("Physics Settings")]
     public float fallGravity = 80f;         //The gravity applied to the ship while it is falling
 
@@ -49,13 +47,13 @@ public class VehicleMovement : MonoBehaviour
     float cameraShakeMinSpeed;
     float cameraShakeRemainSpeed;
     public CameraController camController;
-   
+
     //UI
-    public Speedomitor speedomitor;
+
 
     //EngineStuff
     float driftAmount;
-    public enum DriftingState {NoDrifting, IsDrifting, StoppingDrifting, OnIce}
+    public enum DriftingState { NoDrifting, IsDrifting, StoppingDrifting, OnIce }
     float driftTimer;
 
 
@@ -64,6 +62,7 @@ public class VehicleMovement : MonoBehaviour
     float drag;                             //The air resistance the ship recieves in the forward direction
     bool isOnGround;                        //A flag determining if the ship is currently on the ground
 
+    public PostProcessVolume boostPPFX;
 
     [Header("Debug Stuff")]
     //Debug
@@ -72,8 +71,11 @@ public class VehicleMovement : MonoBehaviour
 
 
     float characterTopSpeed;
-    float characterAccelerationTime;
+    //float characterAccelerationTime; // måske en brugbar ting på et tidspunkt.
 
+
+    float boost;
+    float boostScaler;
 
     void Start()
     {
@@ -84,8 +86,9 @@ public class VehicleMovement : MonoBehaviour
         //Calculate the ship's drag value
         //drag = driveForce / terminalVelocity;
 
-        characterTopSpeed = selectedCharacter.speedCurve.keys[selectedCharacter.speedCurve.length-1].value;
-        characterAccelerationTime = selectedCharacter.speedCurve.keys[selectedCharacter.speedCurve.length - 1].time;
+        characterTopSpeed = selectedCharacter.speedCurve.keys[selectedCharacter.speedCurve.length - 1].value;
+
+        //characterAccelerationTime = selectedCharacter.speedCurve.keys[selectedCharacter.speedCurve.length - 1].time; //Måske en brugbar ting på et tidspunkt
 
         //Set the speed when the camera should start shaking.
         cameraShakeMinSpeed = characterTopSpeed * cameraShakeSpeedRatio;
@@ -94,11 +97,10 @@ public class VehicleMovement : MonoBehaviour
         //Dont drift at start;
         driftingState = DriftingState.NoDrifting;
 
-
 #if UNITY_EDITOR //Debug setup
         if (debugOn)
         {
-        lineDrawer = new LineDrawer();
+            lineDrawer = new LineDrawer();
         }
 
 #endif
@@ -114,6 +116,15 @@ public class VehicleMovement : MonoBehaviour
         CalculatHover();
         CalculatePropulsion();
 
+        //Boost Setup
+        if (boostScaler > 0.01f)
+        {
+            vehicleRigidBody.AddForce(transform.forward * boost * boostScaler, ForceMode.Impulse);
+        }
+    }
+
+    private void Update()
+    {
 
         //Sending speed value out to get the cam to shake
         if (speed > cameraShakeMinSpeed)
@@ -121,9 +132,15 @@ public class VehicleMovement : MonoBehaviour
             camController.CameraEditsSpeed((speed - cameraShakeMinSpeed) / cameraShakeRemainSpeed);
         }
 
-        //Setting spedomitor value
-        speedomitor.SetSpeedomitor(speed);
-
+        //Boost PPFX Setup
+        if (boostScaler > 0.01f)
+        {
+            boostPPFX.weight = boostScaler;
+        }
+        else
+        {
+            boostPPFX.weight = 0f;
+        }
     }
 
     void CalculatHover()
@@ -140,27 +157,29 @@ public class VehicleMovement : MonoBehaviour
 
         //Determine if the ship is on the ground by Raycasting down and seeing if it hits 
         //any collider on the whatIsGround layer
-        isOnGround = Physics.Raycast(ray, out hitInfo, maxGroundDist, whatIsGround);
+        isOnGround = Physics.Raycast(ray, out hitInfo, checkForGroundDist, whatIsGround);
 
         //If the ship is on the ground...
         if (isOnGround)
         {
+            //Wait for introsequence to switch hover on
+
             //...determine how high off the ground it is...
             float height = hitInfo.distance;
             //...save the normal of the ground...
             groundNormal = hitInfo.normal.normalized;
             //...use the PID controller to determine the amount of hover force needed...
-            float forcePercent = hoverPID.Seek(hoverHeight, height);
+            float forcePercent = hoverPID.Seek(selectedCharacter.hoverHeight, height);
 
             //...calulcate the total amount of hover force based on normal (or "up") of the ground...
-            Vector3 force = groundNormal * hoverForce * forcePercent;
+            Vector3 force = groundNormal * selectedCharacter.hoverForce * forcePercent;
             //...calculate the force and direction of gravity to adhere the ship to the 
             //track (which is not always straight down in the world)...
-            Vector3 gravity = -groundNormal * hoverGravity * height;
+            //Vector3 gravity = -groundNormal * hoverGravity * height;
 
             //...and finally apply the hover and gravity forces
             vehicleRigidBody.AddForce(force, ForceMode.Acceleration);
-            vehicleRigidBody.AddForce(gravity, ForceMode.Acceleration);
+            //vehicleRigidBody.AddForce(gravity, ForceMode.Acceleration);
         }
         //...Otherwise...
         else
@@ -192,6 +211,9 @@ public class VehicleMovement : MonoBehaviour
         float rotationTorque = input.rudder * selectedCharacter.turnForceTimer /*- rigidBody.angularVelocity.y*/;
         //Apply the torque to the ship's Y axis
         vehicleRigidBody.AddRelativeTorque(0f, rotationTorque, 0f, ForceMode.VelocityChange);
+
+        //add force to the side when turning
+
 
         #region Drifting setup
 
@@ -233,12 +255,12 @@ public class VehicleMovement : MonoBehaviour
 
             case DriftingState.StoppingDrifting:
 
-                driftTimer = Mathf.Clamp01 (driftTimer - Time.fixedDeltaTime*.5f);
+                driftTimer = Mathf.Clamp01(driftTimer - Time.fixedDeltaTime * .5f);
 
                 driftAmount = selectedCharacter.driftAmount * driftTimer;
 
                 //If driftTimer ends stop drifting
-                if (driftTimer<=0.1f)
+                if (driftTimer <= 0.1f)
                 {
                     driftingState = DriftingState.NoDrifting;
                 }
@@ -303,18 +325,20 @@ public class VehicleMovement : MonoBehaviour
 
         float deltaVelocity = nextVelocity - currentVelocity;
 
-        vehicleRigidBody.AddForce(transform.forward * deltaVelocity * input.thruster, ForceMode.VelocityChange);
+        //Add propulsion
+        vehicleRigidBody.AddForce(transform.forward * deltaVelocity * input.thruster * (1-boostScaler), ForceMode.VelocityChange);
 
-#endregion
+        #endregion
     }
 
-    void CalculateBanking(float angleAmount){
+    void CalculateBanking(float angleAmount)
+    {
 
         //Calculate the angle we want the ship's body to bank into a turn based on the current rudder.
         //It is worth noting that these next few steps are completetly optional and are cosmetic.
         //It just feels so darn cool
 
-        float angle = Mathf.Clamp (angleAmount* angleOfRoll.x, -angleOfRoll.y, angleOfRoll.y);
+        float angle = Mathf.Clamp(angleAmount * angleOfRoll.x, -angleOfRoll.y, angleOfRoll.y);
 
         //Calculate the rotation needed for this new angle
         Quaternion bodyRotation = transform.rotation * Quaternion.Euler(0, 0f, angle); //SKAL LAVES OM HVIS MODELLEN IKKE LIGGER NED!
@@ -362,6 +386,7 @@ public class VehicleMovement : MonoBehaviour
             Vector3 upwardForceFromCollision = Vector3.Dot(collision.impulse, transform.up) * transform.up;
             vehicleRigidBody.AddForce(-upwardForceFromCollision, ForceMode.Impulse);
 
+            vehicleRigidBody.AddRelativeForce(input.rudder * selectedCharacter.turnForceTimer * 20, 0, 0, ForceMode.VelocityChange);
 
 
             if (debugOn)
@@ -379,48 +404,24 @@ public class VehicleMovement : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.layer == LayerMask.NameToLayer("Wall"))
-        {
-            //rigidBody.velocity *= .7f; //Make the player lose velocity
-
-            //Push the player towards the center
-
-
-#if UNITY_EDITOR //Debug only worth in Editor.
-
-            //if (debugOn)
-            //{
-            ////Make the player bounce off the wall
-            ////Calculate the reflection angle
-            //Vector3 pushAwayFromWall = Vector3.Reflect(transform.forward, collision.contacts[0].normal);
-            //Vector3 wallHit = collision.contacts[0].point;
-            //Vector3 endPoint = wallHit + (collision.impulse.normalized * collision.impulse.magnitude);
-            ////Debug to see it.
-            //lineDrawer.DrawLineInGameView(wallHit, endPoint, Color.cyan);
-            //}
-#endif
-        }
-    }
-
     public float GetSpeedPercentage()
     {
         //Returns the total percentage of speed the ship is traveling
         return vehicleRigidBody.velocity.magnitude / terminalVelocity;
     }
 
-//#if UNITY_EDITOR
-//    void OnDrawGizmos()
-//    {
-//        Gizmos.color = Color.cyan;
-//        Gizmos.DrawRay(wallHit, pushAwayFromWall);
-//        Gizmos.DrawSphere(wallHit, 1f);
-//        Gizmos.color = Color.red;
-//        Gizmos.DrawLine(wallHit, endPoint);
+    public void VehicleBoost(float maxBoost, float boostUpTime, float boostDownTime)
+    {
+        boost = maxBoost;
+
+        DOTween.To(() => boostScaler, x => boostScaler = x, 1, boostUpTime)
+               .OnComplete(() => VehicleBoostFinished(boostDownTime));
 
 
-//        print(endPoint);
-//    }
-//#endif
+    }
+    public void VehicleBoostFinished(float boostDownTime)
+    {
+        DOTween.To(() => boostScaler, x => boostScaler = x, 0, boostDownTime);
+    }
+
 }

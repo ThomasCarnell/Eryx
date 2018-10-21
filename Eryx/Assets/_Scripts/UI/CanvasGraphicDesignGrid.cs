@@ -6,9 +6,9 @@
 
 using UnityEngine;
 public class CanvasGraphicDesignGrid : MonoBehaviour {
-	[SerializeField] int gridSize = 5;
+	//[SerializeField] int gridSize = 5;
 	//[SerializeField] int lineHeight = 25;
-
+    /*
 	void OnDrawGizmos () {
 
         if (gridSize == 0)
@@ -25,8 +25,7 @@ public class CanvasGraphicDesignGrid : MonoBehaviour {
 		float canvasWidth = canvas.GetComponent<RectTransform>().rect.xMax - canvas.GetComponent<RectTransform>().rect.xMin;
 		float canvasHeight = canvas.GetComponent<RectTransform>().rect.yMax - canvas.GetComponent<RectTransform>().rect.yMin;
 		float canvasScale = canvas.GetComponent<RectTransform>().localScale.x;
-
-		
+		/*
 		for (int i = 0; i < canvasHeight / 2; i += gridSize) {
 			if (i % 4 == 0) {
 				Gizmos.color = new Color(0.5f, 0.5f, 0.5f, 0.5f);
@@ -51,7 +50,7 @@ public class CanvasGraphicDesignGrid : MonoBehaviour {
 			if (i > 2000) {
 				break;
 			}
-		}
+		}*/
 
 		// Gizmos.color = new Color(1f, 1f, 0.0f, 0.5f);
 		// for (float i = canvasHeight; i > 0; i -= lineHeight) {
@@ -80,5 +79,5 @@ public class CanvasGraphicDesignGrid : MonoBehaviour {
 //			lineX += calculatedColumnWidth;
 //			Gizmos.DrawLine(new Vector3(lineX, canvasHeight, 0), new Vector3(lineX, 0, 0));
 //		}
-	}
+	
 }
