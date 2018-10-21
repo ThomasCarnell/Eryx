@@ -49,3 +49,5 @@ MonoBehaviour:
   speedToStartDrifting: 150
   driftAmount: 5
   turnForceTimer: 0.5
+  maxHealth: 100
+  shipModel: {fileID: 0}

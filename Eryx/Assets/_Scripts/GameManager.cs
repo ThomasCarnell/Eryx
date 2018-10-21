@@ -4,6 +4,7 @@ using UnityEngine;
 using NaughtyAttributes;
 using UnityEngine.SceneManagement;
 using UnityEngine.Playables;
+using DG.Tweening;
 
 public class GameManager : MonoBehaviour
 {
@@ -30,8 +31,16 @@ public class GameManager : MonoBehaviour
     public IntroSequence introSequence;
 
 
+    public float healthIndicatorTimer;
+    float initHealthIndicatorTimer;
+    bool playerIsDamaged;
+    float currentHealth;
+    float health;
+    Tween healthFinalTween;
+
     public bool raceHasBegun;
     public bool isRaceOver;
+    public bool playerDead;
 
     int currentLap;
 
@@ -61,6 +70,12 @@ public class GameManager : MonoBehaviour
         {
             shipUI = FindObjectOfType<ShipUI>();
         }
+
+        //Setting up health
+        initHealthIndicatorTimer = healthIndicatorTimer;
+
+
+
     }
 
     void OnEnable()
@@ -73,6 +88,14 @@ public class GameManager : MonoBehaviour
         //Update the lap number on the ship
         UpdateUI_LapNumber();
         introTimeline.Play();
+
+        //Player is not dead;
+        playerDead = false;
+
+        //Setting health
+        currentHealth = selectedCharacter.maxHealth;
+        shipUI.InitHealth(selectedCharacter.maxHealth);
+        health = currentHealth;
 
         //Initialize intro sequence script.
         introSequence.IntroSequenceInit();
@@ -101,8 +124,20 @@ public class GameManager : MonoBehaviour
             UpdateUI_LapTime();
         }
 
+        if (playerIsDamaged)
+        {
+            //Timer counting down
+            healthIndicatorTimer -= Time.deltaTime;
+
+            if (healthIndicatorTimer<=0)
+            {
+                UpdateUI_HealthFinal();
+            }
+        }
+
     }
 
+    //Called from finish line script
     public void PlayerCompletedLap()
     {
 
@@ -116,8 +151,9 @@ public class GameManager : MonoBehaviour
         if (currentLap >= currentCourse.lapsNeeded)
         {
             isRaceOver = true;
-
+            CourseCompleted();
             UpdateUI_FinalTime();
+            
         }
     }
 
@@ -148,10 +184,55 @@ public class GameManager : MonoBehaviour
 
     public bool IsActiveGame()
     {
-        //If the race has begun and the game is not over, we have an active game
-        return raceHasBegun && !isRaceOver;
+        //If the race has begun and the game is not over and the player is not dead, we have an active game
+        return raceHasBegun && !isRaceOver && !playerDead;
     }
 
+
+    public void DamagePlayer(float damageAmount){
+
+        print("Player was damaged by " + damageAmount + " amount");
+
+        playerIsDamaged = true;
+        currentHealth -= damageAmount;
+
+        UpdateUI_HealthIdicator();
+
+        if (currentHealth<=0)
+        {
+            PlayerIsDestroyed();
+        }
+    }
+
+    void UpdateUI_HealthIdicator(){
+
+        //Timer reset.
+        healthIndicatorTimer = initHealthIndicatorTimer;
+        shipUI.SetHealthIndicator(currentHealth);
+
+    }
+
+    void UpdateUI_HealthFinal(){
+
+        playerIsDamaged = false;
+        healthIndicatorTimer = initHealthIndicatorTimer;
+
+        DOTween.To(() => health, x => health = x, currentHealth, 1)
+               .OnUpdate(()=>shipUI.SetHealthDisplayFinal(health))
+               .OnComplete(()=> shipUI.SetHealthDisplayFinal(health));
+    }
+
+    void PlayerIsDestroyed(){
+
+        print("Player Died and got destroyed");
+        playerDead = true;
+
+    }
+
+    void CourseCompleted(){
+
+        print("Player Won this course!");
+    }
 
     public void Restart()
     {

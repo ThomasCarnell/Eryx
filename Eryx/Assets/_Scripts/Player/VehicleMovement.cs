@@ -35,8 +35,6 @@ public class VehicleMovement : MonoBehaviour
     public Transform shipBody;				//A reference to the ship's body, this is for cosmetics
     [BoxGroup("Physics Settings")]
     public float terminalVelocity = 100f;   //The max speed the ship can go
-    //[BoxGroup("Physics Settings")]
-    //public float hoverGravity = 20f;        //The gravity applied to the ship while it is on the ground
     [BoxGroup("Physics Settings")]
     public float fallGravity = 80f;         //The gravity applied to the ship while it is falling
 
@@ -47,9 +45,6 @@ public class VehicleMovement : MonoBehaviour
     float cameraShakeMinSpeed;
     float cameraShakeRemainSpeed;
     public CameraController camController;
-
-    //UI
-
 
     //EngineStuff
     float driftAmount;
@@ -388,6 +383,13 @@ public class VehicleMovement : MonoBehaviour
 
             vehicleRigidBody.AddRelativeForce(input.rudder * selectedCharacter.turnForceTimer * 20, 0, 0, ForceMode.VelocityChange);
 
+            float collisionForce = collision.relativeVelocity.sqrMagnitude*0.00005f;
+
+            if (collisionForce>GameManager.instance.selectedCharacter.minMaxDamageTaken.x)
+            {
+                GameManager.instance.DamagePlayer(Mathf.Clamp(collisionForce,GameManager.instance.selectedCharacter.minMaxDamageTaken.x,GameManager.instance.selectedCharacter.minMaxDamageTaken.y));
+            }
+
 
             if (debugOn)
             {
@@ -403,6 +405,7 @@ public class VehicleMovement : MonoBehaviour
             }
         }
     }
+
 
     public float GetSpeedPercentage()
     {

@@ -49,3 +49,6 @@ MonoBehaviour:
   speedToStartDrifting: 150
   driftAmount: 10
   turnForceTimer: 0.5
+  maxHealth: 200
+  minMaxDamageTaken: {x: 0.5, y: 10}
+  shipModel: {fileID: 0}

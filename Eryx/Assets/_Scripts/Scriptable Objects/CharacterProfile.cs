@@ -12,9 +12,16 @@ public class CharacterProfile : ScriptableObject {
     public float hoverForce = 300f;
 
     [BoxGroup("Control Setup")]
-    public float speedToStartDrifting;
+    public float speedToStartDrifting = 100f;
     [BoxGroup("Control Setup")]
-    public float driftAmount;
+    public float driftAmount = 5f;
     [BoxGroup("Control Setup")]
     [Range(0.01f, 1)] public float turnForceTimer = .5f;
+
+    [BoxGroup("Ship Setup")]
+    public float maxHealth = 100f;
+    [BoxGroup("Ship Setup")]
+    public Vector2 minMaxDamageTaken;
+    [BoxGroup("Ship Setup")]
+    public GameObject shipModel;
 }
