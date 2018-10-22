@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: HealingPadPBR
+  m_Shader: {fileID: 4800000, guid: 5354c7cd38d77406599862daad37a87c, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 1
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs: []
+    m_Floats:
+    - Vector1_5A06D570: 0.2
+    - Vector1_89712A46: 20
+    m_Colors:
+    - Color_F6B3032E: {r: 11.984314, g: 0.4392157, b: 9.6, a: 1}
+    - Vector2_692408D2: {r: 5, g: 0, b: 0, a: 0}

@@ -16,7 +16,6 @@ public class IntroSequence : MonoBehaviour {
         initHoverHeight = GameManager.instance.selectedCharacter.hoverHeight;
         GameManager.instance.selectedCharacter.hoverHeight = 0;
         tweenHeight = 0;
-
     }
 
     public void SetPlayerHoverOn(){
@@ -32,6 +31,9 @@ public class IntroSequence : MonoBehaviour {
     private void OnDisable()
     {
         //Da det er et scriptable object skal den sættes tilbage hvis personen går ud af spillet
-        GameManager.instance.selectedCharacter.hoverHeight = initHoverHeight;
+        if (initHoverHeight > 0 )
+        {
+            GameManager.instance.selectedCharacter.hoverHeight = initHoverHeight;
+        }
     }
 }

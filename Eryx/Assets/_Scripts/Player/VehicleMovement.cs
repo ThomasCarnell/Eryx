@@ -11,9 +11,7 @@ public class VehicleMovement : MonoBehaviour
 {
     public float speed;						//The current forward speed of the ship
 
-    [BoxGroup("Character Profile")]
-    [Expandable]
-    public CharacterProfile selectedCharacter; //Skal nok være en gamecontroller der håndtere denne.
+    CharacterProfile selectedCharacter;
 
     [BoxGroup("Driver Settings")]
     public DriftingState driftingState;
@@ -71,6 +69,8 @@ public class VehicleMovement : MonoBehaviour
 
     float boost;
     float boostScaler;
+    Tween boostTween;
+    bool playerIsBoosting;
 
     void Start()
     {
@@ -80,6 +80,8 @@ public class VehicleMovement : MonoBehaviour
 
         //Calculate the ship's drag value
         //drag = driveForce / terminalVelocity;
+
+        selectedCharacter = GameManager.instance.selectedCharacter;
 
         characterTopSpeed = selectedCharacter.speedCurve.keys[selectedCharacter.speedCurve.length - 1].value;
 
@@ -91,6 +93,8 @@ public class VehicleMovement : MonoBehaviour
 
         //Dont drift at start;
         driftingState = DriftingState.NoDrifting;
+
+        boostTween = DOTween.To(() => boost, x => boost = x, 0, .5f); //Just to make sure it's not null.
 
 #if UNITY_EDITOR //Debug setup
         if (debugOn)
@@ -110,6 +114,13 @@ public class VehicleMovement : MonoBehaviour
         //Calculate the forces to be applied to the ship
         CalculatHover();
         CalculatePropulsion();
+
+
+        if (input.playerIsBoosting && GameManager.instance.playerBoostIsAvailable && !playerIsBoosting && GameManager.instance.IsActiveGame() && GameManager.instance.currentHealth > 1)
+        {
+            PlayerBoost();
+        }
+
 
         //Boost Setup
         if (boostScaler > 0.01f)
@@ -413,18 +424,61 @@ public class VehicleMovement : MonoBehaviour
         return vehicleRigidBody.velocity.magnitude / terminalVelocity;
     }
 
-    public void VehicleBoost(float maxBoost, float boostUpTime, float boostDownTime)
+
+    public void PlayerBoost()
     {
-        boost = maxBoost;
+        playerIsBoosting = true;
+        boost = selectedCharacter.playerBoostAmount;
 
-        DOTween.To(() => boostScaler, x => boostScaler = x, 1, boostUpTime)
-               .OnComplete(() => VehicleBoostFinished(boostDownTime));
+        if (boostTween != null && boostTween.IsPlaying())
+            boostTween.Pause();
 
+        boostTween = DOTween.To(() => boostScaler, x => boostScaler = x, 1, selectedCharacter.boostUpDownTime.x)
+                            .OnUpdate(PlayerDamageBoost)
+                            .OnComplete(() => PlayerBoostFinished(selectedCharacter.boostUpDownTime.y));
 
     }
+
+    public void PlayerBoostFinished(float boostDownTime)
+    {
+
+        playerIsBoosting = false;
+
+        boostTween = DOTween.To(() => boostScaler, x => boostScaler = x, 0, boostDownTime)
+                            .OnUpdate(PlayerDamageBoost);
+    }
+
+    void PlayerDamageBoost()
+    {
+        if (GameManager.instance.currentHealth > 1)
+        {
+            GameManager.instance.DamagePlayer(selectedCharacter.boostDamagePerUpdate * boostScaler);
+        } else
+        {
+            print("Player is too fragile to boost");
+        }
+    }
+
+
+    public void VehicleBoostPad(float maxBoost, float boostUpTime, float boostDownTime)
+    {
+        boost = maxBoost;
+        playerIsBoosting = true;
+
+        if (boostTween != null && boostTween.IsPlaying())
+            boostTween.Pause();
+
+        boostTween = DOTween.To(() => boostScaler, x => boostScaler = x, 1, boostUpTime)
+               .OnComplete(() => VehicleBoostFinished(boostDownTime));
+    }
+
     public void VehicleBoostFinished(float boostDownTime)
     {
-        DOTween.To(() => boostScaler, x => boostScaler = x, 0, boostDownTime);
+
+        playerIsBoosting = false;
+
+        boostTween = DOTween.To(() => boostScaler, x => boostScaler = x, 0, boostDownTime)
+                            .OnUpdate(()=>print("Downtime"));
     }
 
 }

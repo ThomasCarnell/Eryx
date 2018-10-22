@@ -26,7 +26,7 @@ public class BoostPadController : MonoBehaviour {
     {
         if (other.CompareTag("Player"))
         {
-            vehicleMovement.VehicleBoost(boostMax,boostUpTime,boostdownTime);
+            vehicleMovement.VehicleBoostPad(boostMax,boostUpTime,boostdownTime);
         }
     }
 

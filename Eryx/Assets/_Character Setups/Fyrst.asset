@@ -52,3 +52,7 @@ MonoBehaviour:
   maxHealth: 200
   minMaxDamageTaken: {x: 0.5, y: 10}
   shipModel: {fileID: 0}
+  boostUpDownTime: {x: 0.75, y: 1}
+  playerBoostAmount: 4
+  boostDamagePerUpdate: 0.4
+  boostLapAvailable: 1

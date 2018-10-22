@@ -15,9 +15,17 @@ public class PlayerInput : MonoBehaviour
 
 	//We hide these in the inspector because we want 
 	//them public but we don't want people trying to change them
-    [HideInInspector] public float thruster;			//The current thruster value
+    [ReadOnly] public float thruster;			//The current thruster value
     [ReadOnly] public float rudder;         			//The current rudder value
     [ReadOnly] public bool isBraking;            //The current brake value
+    [ReadOnly] public bool playerIsBoosting;
+
+    private void Start()
+    {
+        //Init some things
+        isBraking = false;
+        playerIsBoosting = false;
+    }
 
     void Update()
     {
@@ -32,7 +40,6 @@ public class PlayerInput : MonoBehaviour
 		{
 			//...set all inputs to neutral values and exit this method
 			thruster = rudder = 0f;
-			isBraking = false;
 			return;
 		}
 
@@ -47,10 +54,9 @@ public class PlayerInput : MonoBehaviour
             }
             else
             {
-                thruster = Input.GetAxis(verticalAxisName);
+                thruster = Mathf.Clamp01(Input.GetAxis(verticalAxisName)); // Clamp so you cannot reverse
             }
             rudder = Input.GetAxis(horizontalAxisName);
-            isBraking = Input.GetButton(brakingKey);
         }
         else if(UnityEditor.EditorApplication.isRemoteConnected)
         {
@@ -76,6 +82,17 @@ public class PlayerInput : MonoBehaviour
     }
 
     public void Brake(bool stop){
-        isBraking = stop;
+            isBraking = stop;
+    }
+
+    public void UsePlayerBoost(){
+
+
+
+    }
+
+    public void PlayerPushingBoost(bool boosting){
+            playerIsBoosting = boosting;
+
     }
 }

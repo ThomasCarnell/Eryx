@@ -24,4 +24,13 @@ public class CharacterProfile : ScriptableObject {
     public Vector2 minMaxDamageTaken;
     [BoxGroup("Ship Setup")]
     public GameObject shipModel;
+
+    [BoxGroup("Boost Setup")]
+    public Vector2 boostUpDownTime = new Vector2(0.5f,3);
+    [BoxGroup("Boost Setup")]
+    public float playerBoostAmount = 5f;
+    [BoxGroup("Boost Setup")]
+    public float boostDamagePerUpdate = .5f;
+    [BoxGroup("Boost Setup")]
+    public int boostLapAvailable = 1;
 }

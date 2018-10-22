@@ -25,6 +25,7 @@ public class FinishLine : MonoBehaviour {
             {
                 GameManager.instance.PlayerCompletedLap();
                 ResetTriggerGates();
+
                 if (debug)
                 {
                     print("Lap Completed");

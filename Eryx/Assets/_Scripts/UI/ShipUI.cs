@@ -6,11 +6,15 @@ using UnityEngine.UI;
 
 public class ShipUI : MonoBehaviour {
 
-    [Header("UI Text References")]
+    [Header("UI References")]
     public TextMeshProUGUI currentSpeedText;    //The text element for the current speed
     public TextMeshProUGUI currentLapText;      //The text element for the current lap
     public Slider healthSliderIndicator;
     public Slider healthSliderFinal;
+    public Image healthSliderIndicatorImage;
+
+    [Header("UI Boost Color")]
+    public Color boostColor;
 
 
     public void SetLapDisplay(int currentLap, int numberOfLaps)
@@ -50,6 +54,11 @@ public class ShipUI : MonoBehaviour {
 
         healthSliderIndicator.value = healthAmount;
 
+    }
+
+    public void SetBoostHealthColor(){
+
+        healthSliderIndicatorImage.color = boostColor;
     }
 
 }

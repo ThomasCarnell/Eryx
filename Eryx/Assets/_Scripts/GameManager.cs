@@ -30,23 +30,26 @@ public class GameManager : MonoBehaviour
     [BoxGroup("References")]
     public IntroSequence introSequence;
 
+    public bool skipIntroSequence;
 
+    [Tooltip("How much time must have passed since player last took damge for the health to go down")]
     public float healthIndicatorTimer;
     float initHealthIndicatorTimer;
     bool playerIsDamaged;
-    float currentHealth;
+    [HideInInspector] public float currentHealth;
     float health;
-    Tween healthFinalTween;
 
-    public bool raceHasBegun;
-    public bool isRaceOver;
-    public bool playerDead;
+    [ReadOnly] public bool raceHasBegun;
+    [ReadOnly] public bool isRaceOver;
+    [ReadOnly] public bool playerDead;
+    [ReadOnly] public bool playerBoostIsAvailable;
+
+    [HideInInspector] public bool playerIsGettingHealed;
+
 
     int currentLap;
 
     float[] lapTimes;
-
-
 
     void Awake()
     {
@@ -87,15 +90,33 @@ public class GameManager : MonoBehaviour
     {
         //Update the lap number on the ship
         UpdateUI_LapNumber();
-        introTimeline.Play();
 
         //Player is not dead;
         playerDead = false;
+
+        //Setting false;
+        if (selectedCharacter.boostLapAvailable <= 0) // Setting boost available if laps needed are 0 or under.
+        {
+            PlayerCanUseBoost();
+        }
+        else
+        {
+            playerBoostIsAvailable = false;
+        }
 
         //Setting health
         currentHealth = selectedCharacter.maxHealth;
         shipUI.InitHealth(selectedCharacter.maxHealth);
         health = currentHealth;
+
+        if (skipIntroSequence)
+        {
+            raceHasBegun = true;
+            lapTimes = new float[currentCourse.lapsNeeded];
+            yield break;
+        }
+
+        introTimeline.Play();
 
         //Initialize intro sequence script.
         introSequence.IntroSequenceInit();
@@ -148,12 +169,16 @@ public class GameManager : MonoBehaviour
 
         UpdateUI_LapNumber();
 
+        if (currentLap == selectedCharacter.boostLapAvailable && !playerBoostIsAvailable)
+        {
+            PlayerCanUseBoost();
+        }
+
         if (currentLap >= currentCourse.lapsNeeded)
         {
             isRaceOver = true;
             CourseCompleted();
             UpdateUI_FinalTime();
-            
         }
     }
 
@@ -189,7 +214,22 @@ public class GameManager : MonoBehaviour
     }
 
 
+    public void HealPlayer(float healAmount){
+        playerIsGettingHealed = true;
+
+        if (currentHealth < selectedCharacter.maxHealth)
+        {
+            currentHealth += healAmount;
+        }
+
+        UpdateUI_HealthIdicator();
+    }
+
+
     public void DamagePlayer(float damageAmount){
+
+        if (playerIsGettingHealed)
+            return;
 
         print("Player was damaged by " + damageAmount + " amount");
 
@@ -238,5 +278,12 @@ public class GameManager : MonoBehaviour
     {
         //Restart the scene by loading the scene that is currently loaded
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void PlayerCanUseBoost(){
+
+        playerBoostIsAvailable = true;
+        shipUI.SetBoostHealthColor();
+        print("Player Can use Boost");
     }
 }
